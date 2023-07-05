@@ -48,8 +48,13 @@ internal sealed class CommandService
         return commandHierarchy;
     }
 
-    public ICommandArgumentsBag ExtractArgumentValuesForCommand(Command command, string[] args)
+    public ICommandArgumentsBag ExtractArgumentValuesForCommand(List<Argument> globalArguments, Command command, 
+        string[] args)
     {
+        Guard.ThrowIfNull(globalArguments);
+        Guard.ThrowIfNull(command);
+        Guard.ThrowIfNull(args);
+        
         var result = new CommandArgumentsBag();
         for (int i = 0; i < args.Length; i++)
         {
@@ -58,12 +63,25 @@ internal sealed class CommandService
             if (helper.Found)
             {
                 var argumentValue = args[i + 1];
-                var argument = helper.IsAbbreviation ? 
-                    command.FindArgumentByAbbreviation(helper.Name ?? string.Empty) : 
-                    command.FindArgumentByName(helper.Name ?? string.Empty);
-                if (argument is not null)
+                var globalArgument = helper.IsAbbreviation ? 
+                    globalArguments.FindArgumentByAbbreviation(helper.Name ?? string.Empty) : 
+                    globalArguments.FindArgumentByName(helper.Name ?? string.Empty);
+                if (globalArgument is not null)
                 {
-                    result.Add(new ArgumentValue(argument.Name ?? string.Empty, argument.Abbreviation, argumentValue));
+                    result.Add(new ArgumentValue(globalArgument.Name ?? string.Empty, globalArgument.Abbreviation, argumentValue));
+                }
+                else
+                {
+                    if (command.Arguments is not null)
+                    {
+                        var argument = helper.IsAbbreviation ? 
+                            command.Arguments.FindArgumentByAbbreviation(helper.Name ?? string.Empty) : 
+                            command.Arguments.FindArgumentByName(helper.Name ?? string.Empty);
+                        if (argument is not null)
+                        {
+                            result.Add(new ArgumentValue(argument.Name ?? string.Empty, argument.Abbreviation, argumentValue));
+                        }
+                    }
                 }
                     
                 i++;

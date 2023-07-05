@@ -45,25 +45,31 @@ public static class ConsoleApp
         // Build commands
         var commandsBuilder = new CommandArgsBuilder();
         appConfiguration.ConfigureCommands(commandsBuilder);
-        var commands = commandsBuilder.Build();
-        if (!commands.Any()) return;
+        var commandArgs = commandsBuilder.Build();
+        if (!commandArgs.Commands.Any()) return;
             
         // Validate verbs being unique on each level & arg names / abbreviations also unique on command
         var validationService = new ValidationService();
-        var validationResult = validationService.ValidateDuplicationsRecursive(commands);
+        var validationResult = validationService.ValidateDuplicationsRecursive(commandArgs.Commands);
         if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
-            
+        validationResult = validationService.ValidateGlobalArgumentsUnique(commandArgs.GlobalArguments);
+        if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
+        validationResult = validationService.ValidateGlobalArgumentsDoNotOverlapRecursive(commandArgs.Commands, 
+            commandArgs.GlobalArguments);
+        if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
+
         // Register the command handlers
         var commandService = new CommandService();
-        commandService.RegisterCommandHandlers(commands, services);
+        commandService.RegisterCommandHandlers(commandArgs.Commands, services);
 
         // Build the command hierarchy to find the command to execute
-        var commandHierarchy = commandService.ExtractCommandHierarchy(commands, args);
+        var commandHierarchy = commandService.ExtractCommandHierarchy(commandArgs.Commands, args);
         if (!commandHierarchy.Any()) throw new ConsoleAppException("Could not build command hierarchy");
         var command = commandHierarchy[^1];
             
         // Get the values
-        var values = commandService.ExtractArgumentValuesForCommand(command, args);
+        var values = commandService.ExtractArgumentValuesForCommand(commandArgs.GlobalArguments,
+            command, args);
 
         // Validate if required arguments are set
         validationResult = validationService.ValidateRequiredArgumentsSet(command, values);
