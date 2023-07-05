@@ -20,6 +20,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageIcon>icon-128.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,6 +36,7 @@
     <ItemGroup>
       <None Include="../../README.md" Pack="true" PackagePath="\" />
       <None Include="../../LICENSE" Pack="true" PackagePath="" />
+      <None Include="../../media/icon-128.png" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
 </Project>

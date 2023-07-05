@@ -1,7 +1,9 @@
-name: Build and Test
+name: Release
 
 on:
-  workflow_dispatch:
+    push:
+      tags:
+      - '*.*.*'
 
 jobs:
   build:

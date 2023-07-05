@@ -13,7 +13,7 @@ public class CommandServiceTests
     public void ItShouldThrowIfCantFindCommand()
     {
         // Arrange
-        var args = new[] {"aks", "app", "up", "--acr", "asd", "-p", "123"};
+        var args = new[] {"aks", "app", "down", "--acr", "asd", "-p", "123"};
         var commands = new List<Command>
         {
             new ()
