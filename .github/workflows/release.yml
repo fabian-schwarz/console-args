@@ -4,6 +4,7 @@ on:
     push:
       tags:
       - '*.*.*'
+    workflow_dispatch:
 
 jobs:
   build:
@@ -26,7 +27,7 @@ jobs:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       shell: pwsh
       run: |
-        Get-ChildItem -Filter "*.nupkg" | ForEach-Object {
+        Get-ChildItem -Recurse -Filter "*.nupkg" | ForEach-Object {
             Write-Host "$($scriptName): Pushing $($_.Name)"
             dotnet nuget push $_ --source $Env:NUGET_URL --api-key $Env:NUGET_API_KEY
             if ($lastexitcode -ne 0) {
