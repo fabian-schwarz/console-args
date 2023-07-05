@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SchwarzConsult.ConsoleArgs.Internal;
 
 internal sealed class CommandArgsBuilder : ICommandArgsBuilder
 {
     private readonly List<CommandBuilder> _commands;
+    private readonly List<Argument> _globalArguments;
 
     public CommandArgsBuilder()
     {
         this._commands = new List<CommandBuilder>();
+        this._globalArguments = new List<Argument>();
     }
 
     public ICommandBuilder AddCommand()
@@ -20,5 +23,37 @@ internal sealed class CommandArgsBuilder : ICommandArgsBuilder
         return builder;
     }
 
-    public List<Command> Build() => this._commands.Select(c => c.Build()).ToList();
+    public CommandArgs Build() => new CommandArgs
+    {
+        Commands = this._commands.Select(c => c.Build()).ToList(),
+        GlobalArguments = this._globalArguments
+    };
+    
+    public ICommandArgsBuilder AddGlobalArgument(ArgumentKeys keys, string? description,
+        Func<string?, Task<bool>>? validator = default) 
+        => this.AddArgument(keys.Name ?? string.Empty, keys.Abbreviation, description, false, validator);
+    
+    public ICommandArgsBuilder AddGlobalArgument(string name, string abbreviation, string? description,
+        Func<string?, Task<bool>>? validator = default) => this.AddArgument(name, abbreviation, description, false, validator);
+    
+    public ICommandArgsBuilder AddGlobalArgument(string name, string? description,
+        Func<string?, Task<bool>>? validator) => this.AddArgument(name, string.Empty, description, false, validator);
+
+    public ICommandArgsBuilder AddGlobalArgument(string name, string? description) 
+        => this.AddArgument(name, string.Empty, description);
+
+    private ICommandArgsBuilder AddArgument(string name, string? abbreviation = "", string? description = "", bool isRequired = false,
+        Func<string?, Task<bool>>? validator = default)
+    {
+        this._globalArguments.Add(new Argument
+        {
+            Name = name,
+            Abbreviation = abbreviation,
+            Description = description,
+            IsRequired = isRequired,
+            Validator = validator,
+            IsSwitch = false
+        });
+        return this;
+    }
 }

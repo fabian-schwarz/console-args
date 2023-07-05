@@ -81,7 +81,7 @@ public class CommandServiceTests
     public void ItShouldExtractArgumentValuesForCommand()
     {
         // Arrange
-        var args = new[] {"test", "--location", "westeurope", "-n", "test", "--tags", "test"};
+        var args = new[] {"test", "--location", "westeurope", "-n", "test", "--tags", "test", "--debug", "true"};
         var command = new Command
         {
             Verb = "test",
@@ -107,10 +107,15 @@ public class CommandServiceTests
                 }
             }
         };
+        var globalArgs = new List<Argument>
+        {
+            new() {Name = "debug"},
+            new() {Name = "query"},
+        };
         var commandService = new CommandService();
 
         // Act
-        var result = commandService.ExtractArgumentValuesForCommand(command, args);
+        var result = commandService.ExtractArgumentValuesForCommand(globalArgs, command, args);
 
         // Assert
         Assert.NotNull(result);
@@ -120,6 +125,9 @@ public class CommandServiceTests
         found = result.TryGetValueByAbbreviation("n", out value);
         Assert.True(found);
         Assert.Equal("test", value);
+        found = result.TryGetValueByName("debug", out value);
+        Assert.True(found);
+        Assert.Equal("true", value);
     }
 
     [Fact]

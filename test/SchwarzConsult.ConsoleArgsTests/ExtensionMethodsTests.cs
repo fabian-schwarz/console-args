@@ -4,7 +4,7 @@ using Xunit;
 
 namespace SchwarzConsult.ConsoleArgsTests;
 
-public class CommandTests
+public class ExtensionMethodsTests
 {
     [Theory]
     [InlineData("existing1", true)]
@@ -30,7 +30,7 @@ public class CommandTests
         };
 
         // Act
-        var result = command.FindArgumentByName(name);
+        var result = command.Arguments.FindArgumentByName(name);
         
         // Assert
         Assert.Equal(expected, result is not null);
@@ -60,7 +60,7 @@ public class CommandTests
         };
 
         // Act
-        var result = command.FindArgumentByAbbreviation(name);
+        var result = command.Arguments.FindArgumentByAbbreviation(name);
         
         // Assert
         Assert.Equal(expected, result is not null);

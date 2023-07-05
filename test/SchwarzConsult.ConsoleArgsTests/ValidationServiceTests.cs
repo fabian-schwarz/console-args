@@ -419,4 +419,208 @@ public class ValidationServiceTests
         // Assert
         Assert.True(result.IsValid);
     }
+    
+    [Fact]
+    public void ItShouldReturnFalseOnDuplicatedGlobalArgumentAndCommandArgumentNames()
+    {
+        // Arrange
+        var commands = new List<Command>
+        {
+            new ()
+            {
+                Verb = "test",
+                Arguments = new List<Argument>
+                {
+                    new (){Name = "test1"},
+                    new (){Name = "test2"},
+                    new (){Name = "duplicate"},
+                }
+            },
+        };
+        var globalArgs = new List<Argument>
+        {
+            new() {Name = "duplicate"},
+            new() {Name = "test3"},
+            new() {Name = "test4"},
+        };
+        var service = new ValidationService();
+
+        // Act
+        var result = service.ValidateGlobalArgumentsDoNotOverlapRecursive(commands, globalArgs);
+
+        // Assert
+        Assert.False(result.IsValid);
+    }
+    
+    [Fact]
+    public void ItShouldReturnTrueOnNoDuplicatedGlobalArgumentAndCommandArgumentNames()
+    {
+        // Arrange
+        var commands = new List<Command>
+        {
+            new ()
+            {
+                Verb = "test",
+                Arguments = new List<Argument>
+                {
+                    new (){Name = "test1"},
+                    new (){Name = "test2"},
+                    new (){Name = "test3"},
+                }
+            },
+        };
+        var globalArgs = new List<Argument>
+        {
+            new() {Name = "test4"},
+            new() {Name = "test5"},
+            new() {Name = "test6"},
+        };
+        var service = new ValidationService();
+
+        // Act
+        var result = service.ValidateGlobalArgumentsDoNotOverlapRecursive(commands, globalArgs);
+
+        // Assert
+        Assert.True(result.IsValid);
+    }
+    
+    [Fact]
+    public void ItShouldReturnFalseOnDuplicatedGlobalArgumentAndCommandArgumentAbbreviations()
+    {
+        // Arrange
+        var commands = new List<Command>
+        {
+            new ()
+            {
+                Verb = "test",
+                Arguments = new List<Argument>
+                {
+                    new (){Name = "test1", Abbreviation = "test1"},
+                    new (){Name = "test2", Abbreviation = "test2"},
+                    new (){Name = "test3", Abbreviation = "duplicate"},
+                }
+            },
+        };
+        var globalArgs = new List<Argument>
+        {
+            new() {Name = "test4", Abbreviation = "duplicate"},
+            new() {Name = "test5", Abbreviation = "test5"},
+            new() {Name = "test6", Abbreviation = "test6"},
+        };
+        var service = new ValidationService();
+
+        // Act
+        var result = service.ValidateGlobalArgumentsDoNotOverlapRecursive(commands, globalArgs);
+
+        // Assert
+        Assert.False(result.IsValid);
+    }
+    
+    [Fact]
+    public void ItShouldReturnTrueOnNoDuplicatedGlobalArgumentAndCommandArgumentAbbreviations()
+    {
+        // Arrange
+        var commands = new List<Command>
+        {
+            new ()
+            {
+                Verb = "test",
+                Arguments = new List<Argument>
+                {
+                    new (){Name = "test1", Abbreviation = "test1"},
+                    new (){Name = "test2", Abbreviation = "test2"},
+                    new (){Name = "test3", Abbreviation = "test3"},
+                }
+            },
+        };
+        var globalArgs = new List<Argument>
+        {
+            new() {Name = "test4", Abbreviation = "test4"},
+            new() {Name = "test5", Abbreviation = "test5"},
+            new() {Name = "test6", Abbreviation = "test6"},
+        };
+        var service = new ValidationService();
+
+        // Act
+        var result = service.ValidateGlobalArgumentsDoNotOverlapRecursive(commands, globalArgs);
+
+        // Assert
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void ItShouldReturnTrueOnGlobalArgsAbbreviationsUnique()
+    {
+        // Arrange
+        var globalArgs = new List<Argument>
+        {
+            new() {Name = "test4", Abbreviation = "test4"},
+            new() {Name = "test5", Abbreviation = "test5"},
+            new() {Name = "test6", Abbreviation = "test6"},
+        };
+        var service = new ValidationService();
+
+        // Act
+        var result = service.ValidateGlobalArgumentsUnique(globalArgs);
+
+        // Assert
+        Assert.True(result.IsValid);
+    }
+    
+    [Fact]
+    public void ItShouldReturnFalseOnGlobalArgsAbbreviationsNotUnique()
+    {
+        // Arrange
+        var globalArgs = new List<Argument>
+        {
+            new() {Name = "test4", Abbreviation = "duplicate"},
+            new() {Name = "test5", Abbreviation = "test5"},
+            new() {Name = "test6", Abbreviation = "duplicate"},
+        };
+        var service = new ValidationService();
+
+        // Act
+        var result = service.ValidateGlobalArgumentsUnique(globalArgs);
+
+        // Assert
+        Assert.False(result.IsValid);
+    }
+    
+    [Fact]
+    public void ItShouldReturnTrueOnGlobalArgsNamesUnique()
+    {
+        // Arrange
+        var globalArgs = new List<Argument>
+        {
+            new() {Name = "test4"},
+            new() {Name = "test5"},
+            new() {Name = "test6"},
+        };
+        var service = new ValidationService();
+
+        // Act
+        var result = service.ValidateGlobalArgumentsUnique(globalArgs);
+
+        // Assert
+        Assert.True(result.IsValid);
+    }
+    
+    [Fact]
+    public void ItShouldReturnFalseOnGlobalArgsNamesNotUnique()
+    {
+        // Arrange
+        var globalArgs = new List<Argument>
+        {
+            new() {Name = "duplicate"},
+            new() {Name = "test5"},
+            new() {Name = "duplicate"},
+        };
+        var service = new ValidationService();
+
+        // Act
+        var result = service.ValidateGlobalArgumentsUnique(globalArgs);
+
+        // Assert
+        Assert.False(result.IsValid);
+    }
 }
