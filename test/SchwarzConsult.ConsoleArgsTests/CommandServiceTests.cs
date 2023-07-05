@@ -72,9 +72,9 @@ public class CommandServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(3, result.Count);
-        Assert.Equal(result[0].Verb, "aks");
-        Assert.Equal(result[1].Verb, "app");
-        Assert.Equal(result[2].Verb, "up");
+        Assert.Equal("aks", result[0].Verb);
+        Assert.Equal("app", result[1].Verb);
+        Assert.Equal("up", result[2].Verb);
     }
 
     [Fact]
