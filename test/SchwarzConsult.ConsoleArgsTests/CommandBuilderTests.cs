@@ -289,8 +289,8 @@ public class CommandBuilderTests
         // Assert
         Assert.NotNull(command);
         Assert.NotNull(command.Arguments);
-        Assert.Equal(1, command.Arguments!.Count);
-        Assert.Equal("test", command.Arguments[0].Name);
+        Assert.Single(command.Arguments!);
+        Assert.Equal("test", command.Arguments![0].Name);
         Assert.Equal(string.Empty, command.Arguments[0].Abbreviation);
         Assert.Equal("test", command.Arguments[0].Description);
         Assert.False(command.Arguments[0].IsRequired);
@@ -311,8 +311,8 @@ public class CommandBuilderTests
         // Assert
         Assert.NotNull(command);
         Assert.NotNull(command.Arguments);
-        Assert.Equal(1, command.Arguments!.Count);
-        Assert.Equal("test", command.Arguments[0].Name);
+        Assert.Single(command.Arguments!);
+        Assert.Equal("test", command.Arguments![0].Name);
         Assert.Equal(string.Empty, command.Arguments[0].Abbreviation);
         Assert.Equal("test", command.Arguments[0].Description);
         Assert.False(command.Arguments[0].IsRequired);
@@ -333,8 +333,8 @@ public class CommandBuilderTests
         // Assert
         Assert.NotNull(command);
         Assert.NotNull(command.Arguments);
-        Assert.Equal(1, command.Arguments!.Count);
-        Assert.Equal("test", command.Arguments[0].Name);
+        Assert.Single(command.Arguments!);
+        Assert.Equal("test", command.Arguments![0].Name);
         Assert.Equal("test", command.Arguments[0].Abbreviation);
         Assert.Equal("test", command.Arguments[0].Description);
         Assert.True(command.Arguments[0].IsRequired);
@@ -355,8 +355,8 @@ public class CommandBuilderTests
         // Assert
         Assert.NotNull(command);
         Assert.NotNull(command.Arguments);
-        Assert.Equal(1, command.Arguments!.Count);
-        Assert.Equal("test", command.Arguments[0].Name);
+        Assert.Single(command.Arguments!);
+        Assert.Equal("test", command.Arguments![0].Name);
         Assert.Equal("test", command.Arguments[0].Abbreviation);
         Assert.Equal("test", command.Arguments[0].Description);
         Assert.True(command.Arguments[0].IsRequired);
@@ -377,8 +377,8 @@ public class CommandBuilderTests
         // Assert
         Assert.NotNull(command);
         Assert.NotNull(command.Arguments);
-        Assert.Equal(1, command.Arguments!.Count);
-        Assert.Equal("test", command.Arguments[0].Name);
+        Assert.Single(command.Arguments!);
+        Assert.Equal("test", command.Arguments![0].Name);
         Assert.Equal("test", command.Arguments[0].Abbreviation);
         Assert.Equal("test", command.Arguments[0].Description);
         Assert.False(command.Arguments[0].IsRequired);
@@ -399,8 +399,8 @@ public class CommandBuilderTests
         // Assert
         Assert.NotNull(command);
         Assert.NotNull(command.Arguments);
-        Assert.Equal(1, command.Arguments!.Count);
-        Assert.Equal("test", command.Arguments[0].Name);
+        Assert.Single(command.Arguments!);
+        Assert.Equal("test", command.Arguments![0].Name);
         Assert.Equal("test", command.Arguments[0].Abbreviation);
         Assert.Equal("test", command.Arguments[0].Description);
         Assert.False(command.Arguments[0].IsRequired);
