@@ -1,0 +1,33 @@
+name: Build and Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+    - name: Restore dependencies
+      run: dotnet restore src/SchwarzConsult.ConsoleArgs/SchwarzConsult.ConsoleArgs.csproj
+    - name: Build
+      run: dotnet build src/SchwarzConsult.ConsoleArgs/SchwarzConsult.ConsoleArgs.csproj --configuration Release --no-restore
+    - name: Push to NuGet
+      env:
+        NUGET_URL: https://api.nuget.org/v3/index.json
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      shell: pwsh
+      run: |
+        Get-ChildItem -Filter "*.nupkg" | ForEach-Object {
+            Write-Host "$($scriptName): Pushing $($_.Name)"
+            dotnet nuget push $_ --source $Env:NUGET_URL --api-key $Env:NUGET_API_KEY
+            if ($lastexitcode -ne 0) {
+                throw ("Exec: " + $errorMessage)
+            }
+        }
