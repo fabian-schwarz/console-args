@@ -31,9 +31,10 @@ public class CommandArgumentsBagTests
         bag.Add(value);
 
         // Act
-        bag.Add(new ArgumentValue("name1", "abbreviation1", "value"));
+        var exception = Record.Exception(() => bag.Add(new ArgumentValue("name1", "abbreviation1", "value")));
 
         // Assert does not throw
+        Assert.Null(exception);
     }
     
     [Fact]

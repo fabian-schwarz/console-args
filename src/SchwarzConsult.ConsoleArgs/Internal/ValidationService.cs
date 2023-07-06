@@ -12,11 +12,7 @@ internal sealed class ValidationService
         Guard.ThrowIfNull(commands);
         
         // Ensure unique verbs
-        var duplicateVerbs = commands
-            .GroupBy(p => p.Verb)
-            .Where(g => g.Count() > 1)
-            .Select(g => g.Key)
-            .ToList();
+        var duplicateVerbs = commands.FindDuplicates(p => p.Verb);
         if (duplicateVerbs.Count > 0) return ValidationResult.Error($"Verb '{duplicateVerbs[0]}' is not unique on a command group");
 
         foreach (var command in commands)
@@ -80,33 +76,6 @@ internal sealed class ValidationService
         
         return ValidationResult.Ok();
     }
-    
-    private ValidationResult ValidateArgumentsDuplications(Command command)
-    {
-        if (command.Arguments is not null)
-        {
-            var duplicateArgumentNames = command
-                .Arguments
-                .GroupBy(p => p.Name)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key)
-                .ToList();
-            if (duplicateArgumentNames.Count > 0) 
-                return ValidationResult.Error($"Argument name '{duplicateArgumentNames[0]}' is not unique on command with verb '{command.Verb}'");
-                
-            var duplicateArgumentAbbreviations = command
-                .Arguments
-                .Where(p => !string.IsNullOrWhiteSpace(p.Abbreviation))
-                .GroupBy(p => p.Abbreviation)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key)
-                .ToList();
-            if (duplicateArgumentAbbreviations.Count > 0) 
-                return ValidationResult.Error($"Argument abbreviation '{duplicateArgumentAbbreviations[0]}' is not unique on command with verb '{command.Verb}'");
-        }
-
-        return ValidationResult.Ok();
-    }
 
     public ValidationResult ValidateGlobalArgumentsDoNotOverlapRecursive(List<Command> commands, List<Argument> globalArguments)
     {
@@ -120,20 +89,14 @@ internal sealed class ValidationService
             var commandArgNames = command.Arguments.Select(a => a.Name);
             var globalArgNames = globalArguments.Select(a => a.Name);
             var names = commandArgNames.Concat(globalArgNames);
-            var duplicateNames = names.GroupBy(p => p)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key)
-                .ToList();
+            var duplicateNames = names.FindDuplicates(p => p);
             if (duplicateNames.Count > 0) 
                 return ValidationResult.Error($"Argument name '{duplicateNames[0]}' is duplicated on command with verb '{command.Verb}' and a global argument");
             
             var commandArgAbbreviations = command.Arguments.Where(p => !string.IsNullOrWhiteSpace(p.Abbreviation)).Select(a => a.Abbreviation);
             var globalArgAbbreviations = globalArguments.Where(p => !string.IsNullOrWhiteSpace(p.Abbreviation)).Select(a => a.Abbreviation);
             var abbreviations = commandArgAbbreviations.Concat(globalArgAbbreviations);
-            var duplicateAbbreviations = abbreviations.GroupBy(p => p)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key)
-                .ToList();
+            var duplicateAbbreviations = abbreviations.FindDuplicates(p => p);
             if (duplicateAbbreviations.Count > 0) 
                 return ValidationResult.Error($"Argument abbreviation '{duplicateAbbreviations[0]}' is duplicated on command with verb '{command.Verb}' and a global argument");
 
@@ -150,22 +113,35 @@ internal sealed class ValidationService
     public ValidationResult ValidateGlobalArgumentsUnique(List<Argument> globalArguments)
     {
         Guard.ThrowIfNull(globalArguments);
-        
-        var names = globalArguments.Select(a => a.Name);
-        var duplicateNames = names.GroupBy(p => p)
-            .Where(g => g.Count() > 1)
-            .Select(g => g.Key)
-            .ToList();
+
+        var duplicateNames = globalArguments.FindDuplicates(g => g.Name);
         if (duplicateNames.Count > 0) 
             return ValidationResult.Error($"Argument name '{duplicateNames[0]}' is duplicated on global arguments");
-            
-        var abbreviations = globalArguments.Where(p => !string.IsNullOrWhiteSpace(p.Abbreviation)).Select(a => a.Abbreviation);
-        var duplicateAbbreviations = abbreviations.GroupBy(p => p)
-            .Where(g => g.Count() > 1)
-            .Select(g => g.Key)
-            .ToList();
+
+        var duplicateAbbreviations =
+            globalArguments.FindDuplicatesButRemoveEmptyStrings(g => g.Abbreviation ?? string.Empty);
         if (duplicateAbbreviations.Count > 0) 
             return ValidationResult.Error($"Argument abbreviation '{duplicateAbbreviations[0]}' is duplicated on global arguments");
+
+        return ValidationResult.Ok();
+    }
+    
+    private ValidationResult ValidateArgumentsDuplications(Command command)
+    {
+        if (command.Arguments is not null)
+        {
+            var duplicateArgumentNames = command
+                .Arguments
+                .FindDuplicates(p => p.Name);
+            if (duplicateArgumentNames.Count > 0) 
+                return ValidationResult.Error($"Argument name '{duplicateArgumentNames[0]}' is not unique on command with verb '{command.Verb}'");
+
+            var duplicateArgumentAbbreviations = command
+                .Arguments
+                .FindDuplicatesButRemoveEmptyStrings(p => p.Abbreviation ?? string.Empty);
+            if (duplicateArgumentAbbreviations.Count > 0) 
+                return ValidationResult.Error($"Argument abbreviation '{duplicateArgumentAbbreviations[0]}' is not unique on command with verb '{command.Verb}'");
+        }
 
         return ValidationResult.Ok();
     }

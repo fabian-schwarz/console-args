@@ -6,7 +6,7 @@ namespace System;
 /// <summary>
 /// Stores the name, abbreviation and value for an argument.
 /// </summary>
-public class ArgumentValue
+public class ArgumentValue : ArgumentKeys
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ArgumentValue"/> class.
@@ -23,14 +23,6 @@ public class ArgumentValue
         this.Value = value;
     }
     
-    /// <summary>
-    /// Gets the abbreviation for this argument.
-    /// </summary>
-    public string? Abbreviation { get; }
-    /// <summary>
-    /// Gets the name of for argument.
-    /// </summary>
-    public string Name { get; }
     /// <summary>
     /// Gets the value for this argument.
     /// </summary>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SchwarzConsult.ConsoleArgs.Internal;
 
-public class CommandArgumentsBag : ICommandArgumentsBag
+internal class CommandArgumentsBag : ICommandArgumentsBag
 {
     private readonly List<ArgumentValue> _argumentValues;
     
