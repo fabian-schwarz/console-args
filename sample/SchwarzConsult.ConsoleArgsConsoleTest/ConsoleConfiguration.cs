@@ -13,7 +13,12 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
 
     public ICommandArgsBuilder ConfigureCommands(ICommandArgsBuilder app)
     {
+        app.AddGlobalArgument("subscription",
+            "Name or ID of subscription. You can configure the default subscription using az account set -s NAME_OR_ID.");
+        app.AddGlobalArgument("output", "o", "Output format.");
+        
         this.GroupCommands(app.AddCommand());
+        
         return app;
     }
 
@@ -49,7 +54,7 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
                 .Done();
     }
 
-    private class GroupCreateHandler : ICommandHandler
+    private sealed class GroupCreateHandler : ICommandHandler
     {
         public Task Handle(ICommandArgumentsBag argumentsBag)
         {
@@ -62,7 +67,7 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
         }
     }
     
-    private class GroupDeleteHandler : ICommandHandler
+    private sealed class GroupDeleteHandler : ICommandHandler
     {
         public Task Handle(ICommandArgumentsBag argumentsBag)
         {

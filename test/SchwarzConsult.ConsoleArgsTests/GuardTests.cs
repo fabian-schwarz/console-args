@@ -13,10 +13,10 @@ public class GuardTests
         object? value = null;
 
         // Act
-        void act() => Guard.ThrowIfNull(value);
+        void Act() => Guard.ThrowIfNull(value);
 
         // Assert
-        Assert.Throws<ArgumentNullException>((Action) act);
+        Assert.Throws<ArgumentNullException>((Action) Act);
     }
     
     [Fact]
@@ -26,10 +26,11 @@ public class GuardTests
         object? value = new object();
 
         // Act
-        void act() => Guard.ThrowIfNull(value);
+        void Act() => Guard.ThrowIfNull(value);
+        var exception = Record.Exception(Act);
 
         // Assert does not throw
-        act();
+        Assert.Null(exception);
     }
     
     [Fact]
@@ -39,10 +40,10 @@ public class GuardTests
         string? value = null;
 
         // Act
-        void act() => Guard.ThrowIfNullOrWhiteSpace(value);
+        void Act() => Guard.ThrowIfNullOrWhiteSpace(value);
 
         // Assert
-        Assert.Throws<ArgumentNullException>((Action) act);
+        Assert.Throws<ArgumentNullException>((Action) Act);
     }
     
     [Fact]
@@ -52,9 +53,10 @@ public class GuardTests
         string? value = "Test";
 
         // Act
-        void act() => Guard.ThrowIfNullOrWhiteSpace(value);
+        void Act() => Guard.ThrowIfNullOrWhiteSpace(value);
+        var exception = Record.Exception(Act);
 
         // Assert does not throw
-        act();
+        Assert.Null(exception);
     }
 }

@@ -41,6 +41,10 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
 
     public ICommandArgsBuilder ConfigureCommands(ICommandArgsBuilder app)
     {
+        app.AddGlobalArgument("subscription",
+            "Name or ID of subscription. You can configure the default subscription using az account set -s NAME_OR_ID.");
+        app.AddGlobalArgument("output", "o", "Output format.");
+        
         this.GroupCommands(app.AddCommand());
         return app;
     }
@@ -54,7 +58,7 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
                 .SetVerb("create")
                 .SetDescription("Create a new resource group.")
                 .AddRequiredArgument("location", "l",
-                    "Location. Values from: az account list-locations. You can configure the default location using az configure --defaults location=<location>.")
+                    "Location. Values from: az account list-locations.")
                 .AddRequiredArgument("name", "n", "Name of the new resource group.")
                 .AddOptionalArgument("managed-by", "The ID of the resource that manages this resource group.")
                 .AddOptionalArgument("tags",
@@ -66,7 +70,7 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
                 .SetDescription("Delete a resource group.")
                 .AddRequiredArgument("name", "n", "The name of the resource group to delete.")
                 .AddOptionalArgument("force-deletion-types", "f", "The resource types you want to force delete.",
-            v => Task.FromResult(new List<string>
+                    v => Task.FromResult(new List<string>
                     {
                         "Microsoft.Compute/virtualMachineScaleSets",
                         "Microsoft.Compute/virtualMachines"

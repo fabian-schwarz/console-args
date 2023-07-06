@@ -148,7 +148,7 @@ public class CommandBuilderTests
         // Arrange
         var builder = new CommandBuilder(null);
         builder.AddRequiredArgument(new ArgumentKeys("test", "test"), "test", 
-            s => Task.FromResult(true));
+            _ => Task.FromResult(true));
 
         // Act
         var command = builder.Build();
@@ -171,7 +171,7 @@ public class CommandBuilderTests
         // Arrange
         var builder = new CommandBuilder(null);
         builder.AddRequiredArgument("test", "test", "test", 
-            s => Task.FromResult(true));
+            _ => Task.FromResult(true));
 
         // Act
         var command = builder.Build();
@@ -237,7 +237,7 @@ public class CommandBuilderTests
     {
         // Arrange
         var builder = new CommandBuilder(null);
-        builder.AddOptionalArgument(new ArgumentKeys("test", "test"), "test", s => Task.FromResult(true));
+        builder.AddOptionalArgument(new ArgumentKeys("test", "test"), "test", _ => Task.FromResult(true));
 
         // Act
         var command = builder.Build();
@@ -259,7 +259,7 @@ public class CommandBuilderTests
     {
         // Arrange
         var builder = new CommandBuilder(null);
-        builder.AddOptionalArgument("test", "test", "test", s => Task.FromResult(true));
+        builder.AddOptionalArgument("test", "test", "test", _ => Task.FromResult(true));
 
         // Act
         var command = builder.Build();
@@ -281,7 +281,7 @@ public class CommandBuilderTests
     {
         // Arrange
         var builder = new CommandBuilder(null);
-        builder.AddOptionalArgument("test", "test", s => Task.FromResult(true));
+        builder.AddOptionalArgument("test", "test", _ => Task.FromResult(true));
 
         // Act
         var command = builder.Build();
@@ -325,7 +325,7 @@ public class CommandBuilderTests
     {
         // Arrange
         var builder = new CommandBuilder(null);
-        builder.AddArgument(new ArgumentKeys("test", "test"), "test", true, s => Task.FromResult(true));
+        builder.AddArgument(new ArgumentKeys("test", "test"), "test", true, _ => Task.FromResult(true));
 
         // Act
         var command = builder.Build();
@@ -347,7 +347,7 @@ public class CommandBuilderTests
     {
         // Arrange
         var builder = new CommandBuilder(null);
-        builder.AddArgument("test", "test", "test", true, s => Task.FromResult(true));
+        builder.AddArgument("test", "test", "test", true, _ => Task.FromResult(true));
 
         // Act
         var command = builder.Build();
