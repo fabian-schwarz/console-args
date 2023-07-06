@@ -45,7 +45,10 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
             "Name or ID of subscription. You can configure the default subscription using az account set -s NAME_OR_ID.");
         app.AddGlobalArgument("output", "o", "Output format.");
         
+        app.AddDefaultHelp(isEnabled: true, "help", "?");
+        
         this.GroupCommands(app.AddCommand());
+        
         return app;
     }
 

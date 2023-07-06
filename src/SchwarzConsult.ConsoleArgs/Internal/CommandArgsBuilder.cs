@@ -9,11 +9,13 @@ internal sealed class CommandArgsBuilder : ICommandArgsBuilder
 {
     private readonly List<CommandBuilder> _commands;
     private readonly List<Argument> _globalArguments;
+    private readonly DefaultHelp _defaultHelp;
 
     public CommandArgsBuilder()
     {
         this._commands = new List<CommandBuilder>();
         this._globalArguments = new List<Argument>();
+        this._defaultHelp = new();
     }
 
     public ICommandBuilder AddCommand()
@@ -23,11 +25,20 @@ internal sealed class CommandArgsBuilder : ICommandArgsBuilder
         return builder;
     }
 
-    public CommandArgs Build() => new CommandArgs
+    public CommandArgs Build() => new()
     {
         Commands = this._commands.Select(c => c.Build()).ToList(),
-        GlobalArguments = this._globalArguments
+        GlobalArguments = this._globalArguments,
+        DefaultHelp = this._defaultHelp
     };
+
+    public ICommandArgsBuilder AddDefaultHelp(bool isEnabled = true, string name = "help", string abbreviation = "?")
+    {
+        this._defaultHelp.IsEnabled = isEnabled;
+        this._defaultHelp.Name = name;
+        this._defaultHelp.Abbreviation = abbreviation;
+        return this;
+    }
     
     public ICommandArgsBuilder AddGlobalArgument(ArgumentKeys keys, string? description,
         Func<string?, Task<bool>>? validator = default) 

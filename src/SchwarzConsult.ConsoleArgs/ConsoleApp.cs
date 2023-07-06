@@ -69,7 +69,7 @@ public static class ConsoleApp
             
         // Get the values
         var values = commandService.ExtractArgumentValuesForCommand(commandArgs.GlobalArguments,
-            command, args);
+            command, args, commandArgs.DefaultHelp);
 
         // Validate if required arguments are set
         validationResult = validationService.ValidateRequiredArgumentsSet(command, values);
@@ -79,13 +79,25 @@ public static class ConsoleApp
         validationResult = await validationService.ValidateArgumentValues(command, values).ConfigureAwait(false);
         if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
 
-        // Get the service
-        if (command.Handler is null) throw new ConsoleAppException($"No handler registered for command '{command.Verb}'");
-        var serviceProvider = services.BuildServiceProvider();
-        var handler = serviceProvider.GetService(command.Handler);
-        if (handler is ICommandHandler commandHandler)
+        // Find out what to run 
+        if (commandArgs.DefaultHelp.IsEnabled &&
+            values.TryGetValueByAbbreviationOrName(commandArgs.DefaultHelp.Name, commandArgs.DefaultHelp.Abbreviation,
+                out _))
         {
-            await commandHandler.Handle(values).ConfigureAwait(false);
+            // Run the default help command
+            var outputWriter = new OutputWriter();
+            outputWriter.WriteDefaultHelp(commandHierarchy, commandArgs.GlobalArguments);
+        }
+        else
+        {
+            // Check and run handler if exists
+            if (command.Handler is null) throw new ConsoleAppException($"No handler registered for command '{command.Verb}'");
+            var serviceProvider = services.BuildServiceProvider();
+            var handler = serviceProvider.GetService(command.Handler);
+            if (handler is ICommandHandler commandHandler)
+            {
+                await commandHandler.Handle(values).ConfigureAwait(false);
+            }
         }
     }
 

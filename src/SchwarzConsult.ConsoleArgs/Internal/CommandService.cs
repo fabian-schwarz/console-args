@@ -55,7 +55,7 @@ internal sealed class CommandService
     }
 
     public ICommandArgumentsBag ExtractArgumentValuesForCommand(List<Argument> globalArguments, Command command, 
-        string[] args)
+        string[] args, DefaultHelp defaultHelp)
     {
         Guard.ThrowIfNull(globalArguments);
         Guard.ThrowIfNull(command);
@@ -68,21 +68,34 @@ internal sealed class CommandService
             var helper = new ArgHelper(item);
             if (helper.Found)
             {
-                var argumentValue = args[i + 1];
-                this.FindArgumentAndAddIfFound(helper, globalArguments, command, argumentValue, result);
-                i++;
+                // For switch values, we don't need to check for the next argument and we need to check if we get out of bounds
+                if (i + 1 == args.Length)
+                {
+                    // The last one seems to be a possible switch argument
+                    this.FindArgumentAndAddIfFound(helper, globalArguments, command, item, result, defaultHelp);
+                }
+                else
+                {
+                    var argumentValue = args[i + 1];
+                    this.FindArgumentAndAddIfFound(helper, globalArguments, command, argumentValue, result, defaultHelp);
+                    // Only skip the next argument if it is not a switch argument
+                    var isArg = argumentValue.StartsWith("--") || argumentValue.StartsWith('-');
+                    if (!isArg) i++;
+                }
             }
         }
 
         return result;
     }
 
-    private void FindArgumentAndAddIfFound(ArgHelper helper, List<Argument> globalArguments, Command command, 
-        string argumentValue, CommandArgumentsBag result)
+    private void FindArgumentAndAddIfFound(ArgHelper argHelper, List<Argument> globalArguments, Command command, 
+        string argumentValue, CommandArgumentsBag result, DefaultHelp defaultHelp)
     {
-        var globalArgument = helper.IsAbbreviation ? 
-            globalArguments.FindArgumentByAbbreviation(helper.Name ?? string.Empty) : 
-            globalArguments.FindArgumentByName(helper.Name ?? string.Empty);
+        if (this.AddDefaultHelpIfEnabledAndFound(defaultHelp, argHelper, result)) return;
+
+        var globalArgument = argHelper.IsAbbreviation ? 
+            globalArguments.FindArgumentByAbbreviation(argHelper.Name ?? string.Empty) : 
+            globalArguments.FindArgumentByName(argHelper.Name ?? string.Empty);
         if (globalArgument is not null)
         {
             result.Add(new ArgumentValue(globalArgument.Name ?? string.Empty, globalArgument.Abbreviation, argumentValue));
@@ -91,15 +104,40 @@ internal sealed class CommandService
         {
             if (command.Arguments is not null)
             {
-                var argument = helper.IsAbbreviation ? 
-                    command.Arguments.FindArgumentByAbbreviation(helper.Name ?? string.Empty) : 
-                    command.Arguments.FindArgumentByName(helper.Name ?? string.Empty);
+                var argument = argHelper.IsAbbreviation ? 
+                    command.Arguments.FindArgumentByAbbreviation(argHelper.Name ?? string.Empty) : 
+                    command.Arguments.FindArgumentByName(argHelper.Name ?? string.Empty);
                 if (argument is not null)
                 {
                     result.Add(new ArgumentValue(argument.Name ?? string.Empty, argument.Abbreviation, argumentValue));
                 }
             }
         }
+    }
+
+    private bool AddDefaultHelpIfEnabledAndFound(DefaultHelp defaultHelp, ArgHelper argHelper, CommandArgumentsBag result)
+    {
+        if (defaultHelp.IsEnabled)
+        {
+            if (argHelper.IsAbbreviation)
+            {
+                if (defaultHelp.Abbreviation.Equals(argHelper.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    result.Add(new ArgumentValue(defaultHelp.Name, defaultHelp.Abbreviation, true.ToString()));
+                    return true;
+                }
+            }
+            else
+            {
+                if (defaultHelp.Name.Equals(argHelper.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    result.Add(new ArgumentValue(defaultHelp.Name, defaultHelp.Abbreviation, true.ToString()));
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
     
     private sealed class ArgHelper

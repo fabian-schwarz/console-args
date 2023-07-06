@@ -112,10 +112,11 @@ public class CommandServiceTests
             new() {Name = "debug"},
             new() {Name = "query"},
         };
+        var defaultHelp = new DefaultHelp();
         var commandService = new CommandService();
 
         // Act
-        var result = commandService.ExtractArgumentValuesForCommand(globalArgs, command, args);
+        var result = commandService.ExtractArgumentValuesForCommand(globalArgs, command, args, defaultHelp);
 
         // Assert
         Assert.NotNull(result);
