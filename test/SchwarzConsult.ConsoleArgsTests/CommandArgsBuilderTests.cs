@@ -105,4 +105,20 @@ public class CommandArgsBuilderTests
         Assert.False(built.GlobalArguments[0].IsRequired);
         Assert.False(built.GlobalArguments[0].IsSwitch);
     }
+
+    [Fact]
+    public void ItShouldAddDefaultHelp()
+    {
+        // Arrange
+        var builder = new CommandArgsBuilder();
+        
+        // Act
+        builder.AddDefaultHelp(false, "asd", "dsa");
+        var built = builder.Build();
+
+        // Assert
+        Assert.False(built.DefaultHelp.IsEnabled);
+        Assert.Equal("asd", built.DefaultHelp.Name);
+        Assert.Equal("dsa", built.DefaultHelp.Abbreviation);
+    }
 }

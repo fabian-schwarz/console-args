@@ -9,6 +9,14 @@ namespace System;
 public interface ICommandArgsBuilder
 {
     /// <summary>
+    /// Enables or disables the default help command.
+    /// </summary>
+    /// <param name="isEnabled">Flag if default help is enabled or disabled.</param>
+    /// <param name="name">The name for the default help argument.</param>
+    /// <param name="abbreviation">The abbreviation for the default help command.</param>
+    /// <returns>The command line application builder.</returns>
+    ICommandArgsBuilder AddDefaultHelp(bool isEnabled = true, string name = "help", string abbreviation = "?");
+    /// <summary>
     /// Adds a new command by leveraging a <see cref="ICommandBuilder"/>.
     /// </summary>
     /// <returns>The builder to configure the new command.</returns>
