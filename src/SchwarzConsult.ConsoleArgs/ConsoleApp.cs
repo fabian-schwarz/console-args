@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -64,7 +65,7 @@ public static class ConsoleApp
 
         // Build the command hierarchy to find the command to execute
         var commandHierarchy = commandService.ExtractCommandHierarchy(commandArgs.Commands, args);
-        if (!commandHierarchy.Any()) throw new ConsoleAppException("Could not build command hierarchy");
+        if (!commandHierarchy.Any()) commandHierarchy.Add(new Command()); // We add an empty command to support the default handler
         var command = commandHierarchy[^1];
             
         // Get the values
@@ -79,7 +80,13 @@ public static class ConsoleApp
         validationResult = await validationService.ValidateArgumentValues(command, values).ConfigureAwait(false);
         if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
 
-        // Find out what to run 
+        // Find out what to run and run it
+        await RunDefaultHelpOrHandlers(commandArgs, values, commandHierarchy, command, services).ConfigureAwait(false);
+    }
+
+    private static async Task RunDefaultHelpOrHandlers(CommandArgs commandArgs, ICommandArgumentsBag values,
+        List<Command> commandHierarchy, Command command, IServiceCollection services)
+    {
         if (commandArgs.DefaultHelp.IsEnabled &&
             values.TryGetValueByAbbreviationOrName(commandArgs.DefaultHelp.Name, commandArgs.DefaultHelp.Abbreviation,
                 out _))
@@ -90,13 +97,45 @@ public static class ConsoleApp
         }
         else
         {
-            // Check and run handler if exists
-            if (command.Handler is null) throw new ConsoleAppException($"No handler registered for command '{command.Verb}'");
-            var serviceProvider = services.BuildServiceProvider();
-            var handler = serviceProvider.GetService(command.Handler);
-            if (handler is ICommandHandler commandHandler)
+            await RunHandler(commandArgs, command, values, services).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task RunHandler(CommandArgs commandArgs, Command command, ICommandArgumentsBag values, IServiceCollection services)
+    {
+        // Check and run handler if exists
+        var serviceProvider = services.BuildServiceProvider();
+        if (command.DelegateHandler is not null)
+        {
+            await command.DelegateHandler(values).ConfigureAwait(false);
+        }
+        else
+        {
+            if (command.Handler is not null)
             {
-                await commandHandler.Handle(values).ConfigureAwait(false);
+                var handler = serviceProvider.GetService(command.Handler);
+                if (handler is ICommandHandler commandHandler)
+                {
+                    await commandHandler.Handle(values).ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                if (commandArgs.DefaultDelegateHandler is not null)
+                {
+                    await commandArgs.DefaultDelegateHandler(values).ConfigureAwait(false);
+                }
+                else
+                {
+                    if (commandArgs.DefaultHandler is not null)
+                    {
+                        var handler = serviceProvider.GetService(commandArgs.DefaultHandler);
+                        if (handler is ICommandHandler commandHandler)
+                        {
+                            await commandHandler.Handle(values).ConfigureAwait(false);
+                        }
+                    }
+                }
             }
         }
     }

@@ -12,6 +12,7 @@ internal sealed class CommandBuilder : ICommandBuilder
     private string _verb;
     private string _description;
     private Type? _handler;
+    private Func<ICommandArgumentsBag, Task>? _delegateHandler;
 
     public CommandBuilder(CommandBuilder? parent)
     {
@@ -21,6 +22,7 @@ internal sealed class CommandBuilder : ICommandBuilder
         this._verb = string.Empty;
         this._description = string.Empty;
         this._handler = default;
+        this._delegateHandler = default;
     }
 
     public Command Build()
@@ -31,7 +33,8 @@ internal sealed class CommandBuilder : ICommandBuilder
             Description = this._description,
             Arguments = this._arguments,
             SubCommands = this._subCommands,
-            Handler = this._handler
+            Handler = this._handler,
+            DelegateHandler = this._delegateHandler,
         };
     }
 
@@ -48,7 +51,8 @@ internal sealed class CommandBuilder : ICommandBuilder
             Description = this._description,
             Arguments = this._arguments,
             SubCommands = this._subCommands,
-            Handler = this._handler
+            Handler = this._handler,
+            DelegateHandler = this._delegateHandler,
         });
         return this._parent;
     }
@@ -62,6 +66,16 @@ internal sealed class CommandBuilder : ICommandBuilder
         where THandler : ICommandHandler
     {
         this._handler = typeof(THandler);
+        this._delegateHandler = default;
+        return this;
+    }
+    
+    public ICommandBuilder SetHandler(Func<ICommandArgumentsBag, Task> delegateHandler)
+    {
+        Guard.ThrowIfNull(delegateHandler);
+
+        this._delegateHandler = delegateHandler;
+        this._handler = default;
         return this;
     }
 

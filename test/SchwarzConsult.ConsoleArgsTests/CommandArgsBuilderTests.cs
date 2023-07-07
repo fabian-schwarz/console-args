@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using SchwarzConsult.ConsoleArgs.Internal;
 using Xunit;
 
@@ -120,5 +121,43 @@ public class CommandArgsBuilderTests
         Assert.False(built.DefaultHelp.IsEnabled);
         Assert.Equal("asd", built.DefaultHelp.Name);
         Assert.Equal("dsa", built.DefaultHelp.Abbreviation);
+    }
+    
+    [Fact]
+    public void ItShouldAddDelegateHandler()
+    {
+        // Arrange
+        var builder = new CommandArgsBuilder();
+        builder.SetDefaultHandler(_ => Task.CompletedTask);
+
+        // Act
+        var built = builder.Build();
+
+        // Assert
+        Assert.NotNull(built.DefaultDelegateHandler);
+        Assert.Null(built.DefaultHandler);
+    }
+    
+    [Fact]
+    public void ItShouldAddHandler()
+    {
+        // Arrange
+        var builder = new CommandArgsBuilder();
+        builder.SetDefaultHandler<TestHandler1>();
+
+        // Act
+        var built = builder.Build();
+
+        // Assert
+        Assert.NotNull(built.DefaultHandler);
+        Assert.Null(built.DefaultDelegateHandler);
+    }
+    
+    private class TestHandler1 : ICommandHandler
+    {
+        public Task Handle(ICommandArgumentsBag argumentsBag)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

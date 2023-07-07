@@ -47,6 +47,12 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
         
         app.AddDefaultHelp(isEnabled: true, "help", "?");
         
+        app.SetDefaultHandler(_ =>
+        {
+            Console.WriteLine("No command was specified. Please use --help to get a list with all possible commands");
+            return Task.CompletedTask;
+        });
+        
         this.GroupCommands(app.AddCommand());
         
         return app;
@@ -78,7 +84,15 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
                         "Microsoft.Compute/virtualMachineScaleSets",
                         "Microsoft.Compute/virtualMachines"
                     }.Contains(v ?? string.Empty)))
-                .SetHandler<GroupDeleteHandler>()
+                .SetHandler(argumentsBag =>
+                {
+                    foreach (var value in argumentsBag.List())
+                    {
+                        Console.WriteLine($"{value.Name}, {value.Abbreviation}: {value.Value}");
+                    }
+
+                    return Task.CompletedTask;
+                })
                 .AddSwitchArgument("no-wait", description: "Do not wait for the long-running operation to finish.")
                 .AddSwitchArgument("yes", "y", "Do not prompt for confirmation.")
                 .Done();
@@ -86,7 +100,7 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
 }
 ```
 
-Configure your command handlers by implementing the **ICommandHandler** interface and reference them in the **SetHandler<>()** call.
+Configure your command handlers by either implementing the **ICommandHandler** interface and reference them in the **SetHandler<>()** call.
 
 ```csharp
 private class GroupCreateHandler : ICommandHandler
@@ -101,6 +115,20 @@ private class GroupCreateHandler : ICommandHandler
         return Task.CompletedTask;
     }
 }
+```
+
+or adding them inline using a lambda expression.
+
+```csharp
+.SetHandler(argumentsBag =>
+{
+    foreach (var value in argumentsBag.List())
+    {
+        Console.WriteLine($"{value.Name}, {value.Abbreviation}: {value.Value}");
+    }
+
+    return Task.CompletedTask;
+})
 ```
 
 In your **Program.cs** file you can then use the **ConsoleApp** to run your console application.

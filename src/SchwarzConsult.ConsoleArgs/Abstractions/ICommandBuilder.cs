@@ -33,6 +33,12 @@ public interface ICommandBuilder
     ICommandBuilder SetHandler<THandler>()
         where THandler : ICommandHandler;
     /// <summary>
+    /// Registers the handler for this command.
+    /// </summary>
+    /// <param name="delegateHandler">Function to handle this command.</param>
+    /// <returns>The builder for the command.</returns>
+    ICommandBuilder SetHandler(Func<ICommandArgumentsBag, Task> delegateHandler);
+    /// <summary>
     /// Adds a switch argument to the command.
     /// </summary>
     /// <param name="name">Name of the new argument.</param>

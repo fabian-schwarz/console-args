@@ -56,4 +56,17 @@ public interface ICommandArgsBuilder
     /// <param name="description">Optional description for the new argument.</param>
     /// <returns>The command line application builder.</returns>
     public ICommandArgsBuilder AddGlobalArgument(string name, string? description);
+    /// <summary>
+    /// Sets the default handler if no command specific handler was found
+    /// </summary>
+    /// <typeparam name="THandler">Type of the handler. Must Implement <see cref="ICommandHandler"/>.</typeparam>
+    /// <returns>The command line application builder.</returns>
+    ICommandArgsBuilder SetDefaultHandler<THandler>()
+        where THandler : ICommandHandler;
+    /// <summary>
+    /// Sets the default handler if no command specific handler was found
+    /// </summary>
+    /// <param name="delegateHandler">Handler implementation.</param>
+    /// <returns>The command line application builder.</returns>
+    ICommandArgsBuilder SetDefaultHandler(Func<ICommandArgumentsBag, Task> delegateHandler);
 }
