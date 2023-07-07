@@ -96,11 +96,11 @@ internal sealed class CommandBuilder : ICommandBuilder
     }
     
     public ICommandBuilder AddRequiredArgument(ArgumentKeys keys, string? description,
-        Func<string?, Task<bool>>? validator)
+        Func<string?, Task<ValidationResult>>? validator)
         => this.AddArgument(keys.Name ?? string.Empty, keys.Abbreviation ?? string.Empty, description, true, validator);
     
     public ICommandBuilder AddRequiredArgument(string name, string abbreviation, string? description,
-        Func<string?, Task<bool>>? validator) => this.AddArgument(name, abbreviation, description, true, validator);
+        Func<string?, Task<ValidationResult>>? validator) => this.AddArgument(name, abbreviation, description, true, validator);
     
     public ICommandBuilder AddRequiredArgument(ArgumentKeys keys, string? description)
         => this.AddArgument(keys.Name ?? string.Empty, keys.Abbreviation ?? string.Empty, description, true);
@@ -109,24 +109,24 @@ internal sealed class CommandBuilder : ICommandBuilder
         => this.AddArgument(name, abbreviation, description, true);
     
     public ICommandBuilder AddOptionalArgument(ArgumentKeys keys, string? description,
-        Func<string?, Task<bool>>? validator = default) 
+        Func<string?, Task<ValidationResult>>? validator = default) 
         => this.AddArgument(keys.Name ?? string.Empty, keys.Abbreviation, description, false, validator);
     
     public ICommandBuilder AddOptionalArgument(string name, string abbreviation, string? description,
-        Func<string?, Task<bool>>? validator = default) => this.AddArgument(name, abbreviation, description, false, validator);
+        Func<string?, Task<ValidationResult>>? validator = default) => this.AddArgument(name, abbreviation, description, false, validator);
     
     public ICommandBuilder AddOptionalArgument(string name, string? description,
-        Func<string?, Task<bool>>? validator) => this.AddArgument(name, string.Empty, description, false, validator);
+        Func<string?, Task<ValidationResult>>? validator) => this.AddArgument(name, string.Empty, description, false, validator);
 
     public ICommandBuilder AddOptionalArgument(string name, string? description) 
         => this.AddArgument(name, string.Empty, description);
 
     public ICommandBuilder AddArgument(ArgumentKeys keys, string? description = "", bool isRequired = false,
-        Func<string?, Task<bool>>? validator = default)
+        Func<string?, Task<ValidationResult>>? validator = default)
         => this.AddArgument(keys.Name ?? string.Empty, keys.Abbreviation, description, isRequired, validator);
     
     public ICommandBuilder AddArgument(string name, string? abbreviation = "", string? description = "", bool isRequired = false,
-        Func<string?, Task<bool>>? validator = default)
+        Func<string?, Task<ValidationResult>>? validator = default)
     {
         this._arguments.Add(new Argument
         {

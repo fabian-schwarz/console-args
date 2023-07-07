@@ -64,20 +64,37 @@ internal sealed class CommandArgsBuilder : ICommandArgsBuilder
     }
     
     public ICommandArgsBuilder AddGlobalArgument(ArgumentKeys keys, string? description,
-        Func<string?, Task<bool>>? validator = default) 
+        Func<string?, Task<ValidationResult>>? validator = default) 
         => this.AddArgument(keys.Name ?? string.Empty, keys.Abbreviation, description, false, validator);
     
     public ICommandArgsBuilder AddGlobalArgument(string name, string abbreviation, string? description,
-        Func<string?, Task<bool>>? validator = default) => this.AddArgument(name, abbreviation, description, false, validator);
+        Func<string?, Task<ValidationResult>>? validator = default) => this.AddArgument(name, abbreviation, description, false, validator);
     
     public ICommandArgsBuilder AddGlobalArgument(string name, string? description,
-        Func<string?, Task<bool>>? validator) => this.AddArgument(name, string.Empty, description, false, validator);
+        Func<string?, Task<ValidationResult>>? validator) => this.AddArgument(name, string.Empty, description, false, validator);
 
     public ICommandArgsBuilder AddGlobalArgument(string name, string? description) 
         => this.AddArgument(name, string.Empty, description);
+    
+    public ICommandArgsBuilder AddGlobalSwitchArgument(ArgumentKeys keys, string? description = "")
+        => this.AddGlobalSwitchArgument(keys.Name ?? string.Empty, keys.Abbreviation, description);
+    
+    public ICommandArgsBuilder AddGlobalSwitchArgument(string name, string? abbreviation = "", string? description = "")
+    {
+        this._globalArguments.Add(new Argument
+        {
+            Name = name,
+            Abbreviation = abbreviation,
+            Description = description,
+            IsRequired = false,
+            Validator = default,
+            IsSwitch = true
+        });
+        return this;
+    }
 
     private ICommandArgsBuilder AddArgument(string name, string? abbreviation = "", string? description = "", bool isRequired = false,
-        Func<string?, Task<bool>>? validator = default)
+        Func<string?, Task<ValidationResult>>? validator = default)
     {
         this._globalArguments.Add(new Argument
         {

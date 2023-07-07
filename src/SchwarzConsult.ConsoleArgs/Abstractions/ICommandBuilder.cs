@@ -63,7 +63,7 @@ public interface ICommandBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The builder for the command.</returns>
     ICommandBuilder AddArgument(string name, string? abbreviation = "", string? description = "", bool isRequired = false,
-        Func<string?, Task<bool>>? validator = default);
+        Func<string?, Task<ValidationResult>>? validator = default);
     /// <summary>
     /// Adds a custom argument to the command.
     /// </summary>
@@ -73,7 +73,7 @@ public interface ICommandBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The builder for the command.</returns>
     ICommandBuilder AddArgument(ArgumentKeys keys, string? description = "", bool isRequired = false,
-        Func<string?, Task<bool>>? validator = default);
+        Func<string?, Task<ValidationResult>>? validator = default);
     /// <summary>
     /// Adds a required argument to the command.
     /// </summary>
@@ -83,7 +83,7 @@ public interface ICommandBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The builder for the command.</returns>
     public ICommandBuilder AddRequiredArgument(string name, string abbreviation, string? description,
-        Func<string?, Task<bool>>? validator);
+        Func<string?, Task<ValidationResult>>? validator);
     /// <summary>
     /// Adds a required argument to the command.
     /// </summary>
@@ -107,7 +107,7 @@ public interface ICommandBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The builder for the command.</returns>
     ICommandBuilder AddRequiredArgument(ArgumentKeys keys, string? description,
-        Func<string?, Task<bool>>? validator);
+        Func<string?, Task<ValidationResult>>? validator);
     /// <summary>
     /// Adds an optional argument to the command.
     /// </summary>
@@ -117,7 +117,7 @@ public interface ICommandBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The builder for the command.</returns>
     ICommandBuilder AddOptionalArgument(string name, string abbreviation, string? description,
-        Func<string?, Task<bool>>? validator = default);
+        Func<string?, Task<ValidationResult>>? validator = default);
     /// <summary>
     /// Adds an optional argument to the command.
     /// </summary>
@@ -126,7 +126,7 @@ public interface ICommandBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The builder for the command.</returns>
     ICommandBuilder AddOptionalArgument(ArgumentKeys keys, string? description,
-        Func<string?, Task<bool>>? validator = default) 
+        Func<string?, Task<ValidationResult>>? validator = default) 
         => this.AddArgument(keys.Name ?? string.Empty, keys.Abbreviation, description, false, validator);
     /// <summary>
     /// Adds an optional argument to the command.
@@ -136,7 +136,7 @@ public interface ICommandBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The builder for the command.</returns>
     ICommandBuilder AddOptionalArgument(string name, string? description,
-        Func<string?, Task<bool>>? validator);
+        Func<string?, Task<ValidationResult>>? validator);
     /// <summary>
     /// Adds an optional command to the command.
     /// </summary>

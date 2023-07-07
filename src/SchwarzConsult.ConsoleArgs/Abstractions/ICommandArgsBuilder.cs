@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using SchwarzConsult.ConsoleArgs.Internal;
 
 // ReSharper disable once CheckNamespace
 namespace System;
@@ -29,7 +30,7 @@ public interface ICommandArgsBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The command line application builder.</returns>
     public ICommandArgsBuilder AddGlobalArgument(ArgumentKeys keys, string? description,
-        Func<string?, Task<bool>>? validator = default);
+        Func<string?, Task<ValidationResult>>? validator = default);
     /// <summary>
     /// Adds a new global argument.
     /// </summary>
@@ -39,7 +40,7 @@ public interface ICommandArgsBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The command line application builder.</returns>
     public ICommandArgsBuilder AddGlobalArgument(string name, string abbreviation, string? description,
-        Func<string?, Task<bool>>? validator = default);
+        Func<string?, Task<ValidationResult>>? validator = default);
     /// <summary>
     /// Adds a new global argument.
     /// </summary>
@@ -48,7 +49,7 @@ public interface ICommandArgsBuilder
     /// <param name="validator">Optional validator function to validate the input value from the user.</param>
     /// <returns>The command line application builder.</returns>
     public ICommandArgsBuilder AddGlobalArgument(string name, string? description,
-        Func<string?, Task<bool>>? validator);
+        Func<string?, Task<ValidationResult>>? validator);
     /// <summary>
     /// Adds a new global argument.
     /// </summary>
@@ -69,4 +70,19 @@ public interface ICommandArgsBuilder
     /// <param name="delegateHandler">Handler implementation.</param>
     /// <returns>The command line application builder.</returns>
     ICommandArgsBuilder SetDefaultHandler(Func<ICommandArgumentsBag, Task> delegateHandler);
+    /// <summary>
+    /// Adds a global switch argument to the application.
+    /// </summary>
+    /// <param name="keys">Keys of the new argument.</param>
+    /// <param name="description">Optional description for the new argument.</param>
+    /// <returns>The command line application builder.</returns>
+    ICommandArgsBuilder AddGlobalSwitchArgument(ArgumentKeys keys, string? description = "");
+    /// <summary>
+    /// Adds a global switch argument to the application.
+    /// </summary>
+    /// <param name="name">Name of the new argument.</param>
+    /// <param name="abbreviation">Optional abbreviation for the new argument.</param>
+    /// <param name="description">Optional description for the new argument.</param>
+    /// <returns>The command line application builder.</returns>
+    ICommandArgsBuilder AddGlobalSwitchArgument(string name, string? abbreviation = "", string? description = "");
 }
