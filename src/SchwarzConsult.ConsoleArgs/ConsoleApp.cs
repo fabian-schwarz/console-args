@@ -47,16 +47,13 @@ public static class ConsoleApp
         var commandsBuilder = new CommandArgsBuilder();
         appConfiguration.ConfigureCommands(commandsBuilder);
         var commandArgs = commandsBuilder.Build();
-        if (!commandArgs.Commands.Any()) return;
+        if (!commandArgs.Commands.Any() && 
+            commandArgs.DefaultHandler is null && 
+            commandArgs.DefaultDelegateHandler is null) return;
             
         // Validate verbs being unique on each level & arg names / abbreviations also unique on command
         var validationService = new ValidationService();
-        var validationResult = validationService.ValidateDuplicationsRecursive(commandArgs.Commands);
-        if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
-        validationResult = validationService.ValidateGlobalArgumentsUnique(commandArgs.GlobalArguments);
-        if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
-        validationResult = validationService.ValidateGlobalArgumentsDoNotOverlapRecursive(commandArgs.Commands, 
-            commandArgs.GlobalArguments);
+        var validationResult = validationService.ValidateUserConfiguration(commandArgs);
         if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
 
         // Register the command handlers
@@ -68,16 +65,12 @@ public static class ConsoleApp
         if (!commandHierarchy.Any()) commandHierarchy.Add(new Command()); // We add an empty command to support the default handler
         var command = commandHierarchy[^1];
             
-        // Get the values
+        // Extract the values from the command line arguments
         var values = commandService.ExtractArgumentValuesForCommand(commandArgs.GlobalArguments,
             command, args, commandArgs.DefaultHelp);
 
-        // Validate if required arguments are set
-        validationResult = validationService.ValidateRequiredArgumentsSet(command, values);
-        if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
-            
-        // Validate argument values (e.g. if a string is a valid int) if validator is set
-        validationResult = await validationService.ValidateArgumentValues(command, values).ConfigureAwait(false);
+        // Validate if input values fill the required arguments configured & pass user configured validators
+        validationResult = await validationService.ValidateInputValues(command, values);
         if (!validationResult.IsValid) throw new ConsoleAppException(validationResult.ErrorMessage!);
 
         // Find out what to run and run it
@@ -103,41 +96,42 @@ public static class ConsoleApp
 
     private static async Task RunHandler(CommandArgs commandArgs, Command command, ICommandArgumentsBag values, IServiceCollection services)
     {
-        // Check and run handler if exists
+        // Check and run handler if command handler exists
         var serviceProvider = services.BuildServiceProvider();
         if (command.DelegateHandler is not null)
         {
             await command.DelegateHandler(values).ConfigureAwait(false);
+            return;
         }
-        else
+        
+        if (command.Handler is not null)
         {
-            if (command.Handler is not null)
+            var handler = serviceProvider.GetService(command.Handler);
+            if (handler is ICommandHandler commandHandler)
             {
-                var handler = serviceProvider.GetService(command.Handler);
-                if (handler is ICommandHandler commandHandler)
-                {
-                    await commandHandler.Handle(values).ConfigureAwait(false);
-                }
-            }
-            else
-            {
-                if (commandArgs.DefaultDelegateHandler is not null)
-                {
-                    await commandArgs.DefaultDelegateHandler(values).ConfigureAwait(false);
-                }
-                else
-                {
-                    if (commandArgs.DefaultHandler is not null)
-                    {
-                        var handler = serviceProvider.GetService(commandArgs.DefaultHandler);
-                        if (handler is ICommandHandler commandHandler)
-                        {
-                            await commandHandler.Handle(values).ConfigureAwait(false);
-                        }
-                    }
-                }
+                await commandHandler.Handle(values).ConfigureAwait(false);
+                return;
             }
         }
+        
+        // Check and run default handler if command handler does not exist
+        if (commandArgs.DefaultDelegateHandler is not null)
+        {
+            await commandArgs.DefaultDelegateHandler(values).ConfigureAwait(false);
+            return;
+        }
+        
+        if (commandArgs.DefaultHandler is not null)
+        {
+            var handler = serviceProvider.GetService(commandArgs.DefaultHandler);
+            if (handler is ICommandHandler commandHandler)
+            {
+                await commandHandler.Handle(values).ConfigureAwait(false);
+                return;
+            }
+        }
+        
+        throw new ConsoleAppException($"No handler found for command with verb '{command.Verb}', and no default handler configured.");
     }
 
     private static IConfiguration GetConfiguration()

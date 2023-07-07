@@ -66,22 +66,21 @@ internal sealed class CommandService
         {
             var item = args[i];
             var helper = new ArgHelper(item);
-            if (helper.Found)
+            if (!helper.Found) continue;
+            
+            // For switch values, we don't need to check for the next argument and we need to check if we get out of bounds
+            if (i + 1 == args.Length)
             {
-                // For switch values, we don't need to check for the next argument and we need to check if we get out of bounds
-                if (i + 1 == args.Length)
-                {
-                    // The last one seems to be a possible switch argument
-                    this.FindArgumentAndAddIfFound(helper, globalArguments, command, item, result, defaultHelp);
-                }
-                else
-                {
-                    var argumentValue = args[i + 1];
-                    this.FindArgumentAndAddIfFound(helper, globalArguments, command, argumentValue, result, defaultHelp);
-                    // Only skip the next argument if it is not a switch argument
-                    var isArg = argumentValue.StartsWith("--") || argumentValue.StartsWith('-');
-                    if (!isArg) i++;
-                }
+                // The last one seems to be a possible switch argument
+                this.FindArgumentAndAddIfFound(helper, globalArguments, command, item, result, defaultHelp);
+            }
+            else
+            {
+                var argumentValue = args[i + 1];
+                this.FindArgumentAndAddIfFound(helper, globalArguments, command, argumentValue, result, defaultHelp);
+                // Only skip the next argument if it is not a switch argument
+                var isArg = argumentValue.StartsWith("--") || argumentValue.StartsWith('-');
+                if (!isArg) i++;
             }
         }
 

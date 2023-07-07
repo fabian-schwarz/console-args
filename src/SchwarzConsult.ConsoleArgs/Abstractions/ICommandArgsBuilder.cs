@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using SchwarzConsult.ConsoleArgs.Internal;
 
 // ReSharper disable once CheckNamespace
 namespace System;

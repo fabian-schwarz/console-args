@@ -9,7 +9,7 @@ You should install with NuGet:
 Install-Package SchwarzConsult.ConsoleArgs
 ```
 
-Or via the .NET Core command line interface:
+Or via the .NET command line interface:
 ```bash
 dotnet add package SchwarzConsult.ConsoleArgs
 ```
