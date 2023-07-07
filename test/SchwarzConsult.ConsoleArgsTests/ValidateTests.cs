@@ -12,7 +12,7 @@ public class ValidateTests
     public async Task ItShouldValidateAsBoolean(string value, bool result)
     {
         // Arrange, Act & Assert
-        Assert.Equal(result, await Validate.AsBoolean(value));
+        Assert.Equal(result, (await Validate.AsBoolean(value)).IsValid);
     }
     
     [Theory]
@@ -21,7 +21,7 @@ public class ValidateTests
     public async Task ItShouldValidateAsInt(string value, bool result)
     {
         // Arrange, Act & Assert
-        Assert.Equal(result, await Validate.AsInt(value));
+        Assert.Equal(result, (await Validate.AsInt(value)).IsValid);
     }
     
     [Theory]
@@ -30,7 +30,7 @@ public class ValidateTests
     public async Task ItShouldValidateAsLong(string value, bool result)
     {
         // Arrange, Act & Assert
-        Assert.Equal(result, await Validate.AsLong(value));
+        Assert.Equal(result, (await Validate.AsLong(value)).IsValid);
     }
     
     [Theory]
@@ -39,7 +39,7 @@ public class ValidateTests
     public async Task ItShouldValidateAsFloat(string value, bool result)
     {
         // Arrange, Act & Assert
-        Assert.Equal(result, await Validate.AsFloat(value));
+        Assert.Equal(result, (await Validate.AsFloat(value)).IsValid);
     }
     
     [Theory]
@@ -48,7 +48,7 @@ public class ValidateTests
     public async Task ItShouldValidateAsDouble(string value, bool result)
     {
         // Arrange, Act & Assert
-        Assert.Equal(result, await Validate.AsDouble(value));
+        Assert.Equal(result, (await Validate.AsDouble(value)).IsValid);
     }
     
     [Theory]
@@ -57,7 +57,7 @@ public class ValidateTests
     public async Task ItShouldValidateAsDateTime(string value, bool result)
     {
         // Arrange, Act & Assert
-        Assert.Equal(result, await Validate.AsDateTime(value));
+        Assert.Equal(result, (await Validate.AsDateTime(value)).IsValid);
     }
     
     [Theory]
@@ -66,7 +66,7 @@ public class ValidateTests
     public async Task ItShouldValidateAsDecimal(string value, bool result)
     {
         // Arrange, Act & Assert
-        Assert.Equal(result, await Validate.AsDecimal(value));
+        Assert.Equal(result, (await Validate.AsDecimal(value)).IsValid);
     }
     
     [Theory]
@@ -75,7 +75,7 @@ public class ValidateTests
     public async Task ItShouldValidateAsGuid(string value, bool result)
     {
         // Arrange, Act & Assert
-        Assert.Equal(result, await Validate.AsGuid(value));
+        Assert.Equal(result, (await Validate.AsGuid(value)).IsValid);
     }
     
     [Theory]
@@ -84,6 +84,6 @@ public class ValidateTests
     public async Task ItShouldValidateAsTimeSpan(string value, bool result)
     {
         // Arrange, Act & Assert
-        Assert.Equal(result, await Validate.AsTimeSpan(value));
+        Assert.Equal(result, (await Validate.AsTimeSpan(value)).IsValid);
     }
 }

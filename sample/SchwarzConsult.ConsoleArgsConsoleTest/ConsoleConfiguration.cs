@@ -16,6 +16,7 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
         app.AddGlobalArgument("subscription",
             "Name or ID of subscription. You can configure the default subscription using az account set -s NAME_OR_ID.");
         app.AddGlobalArgument("output", "o", "Output format.");
+        app.AddGlobalSwitchArgument("debug", "d", "Increase logging verbosity to show all debug logs.");
 
         app.AddDefaultHelp(isEnabled: true, "help", "?");
 
@@ -51,11 +52,16 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
                 .SetDescription("Delete a resource group.")
                 .AddRequiredArgument("name", "n", "The name of the resource group to delete.")
                 .AddOptionalArgument("force-deletion-types", "f", "The resource types you want to force delete.",
-            v => Task.FromResult(new List<string>
+            v =>
                     {
-                        "Microsoft.Compute/virtualMachineScaleSets",
-                        "Microsoft.Compute/virtualMachines"
-                    }.Contains(v ?? string.Empty)))
+                        var isValid = new List<string>
+                        {
+                            "Microsoft.Compute/virtualMachineScaleSets",
+                            "Microsoft.Compute/virtualMachines"
+                        }.Contains(v ?? string.Empty);
+                        if (isValid) return ValidationResult.OkAsync();
+                        return ValidationResult.ErrorAsync($"Value '{v}' is not a valid force deletion type.");
+                    })
                 .SetHandler(argumentsBag =>
                 {
                     foreach (var value in argumentsBag.List())

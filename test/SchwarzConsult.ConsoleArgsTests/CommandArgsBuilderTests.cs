@@ -153,6 +153,46 @@ public class CommandArgsBuilderTests
         Assert.Null(built.DefaultDelegateHandler);
     }
     
+    [Fact]
+    public void ItShouldGlobalSwitchArgument1()
+    {
+        // Arrange
+        var builder = new CommandArgsBuilder();
+        builder.AddGlobalSwitchArgument(new ArgumentKeys("test", "test"), "description");
+        
+        // Act
+        var built = builder.Build();
+        
+        // Assert
+        Assert.Single(built.GlobalArguments);
+        Assert.Equal("test", built.GlobalArguments[0].Name);
+        Assert.Equal("description", built.GlobalArguments[0].Description);
+        Assert.Equal("test", built.GlobalArguments[0].Abbreviation);
+        Assert.Null(built.GlobalArguments[0].Validator);
+        Assert.False(built.GlobalArguments[0].IsRequired);
+        Assert.True(built.GlobalArguments[0].IsSwitch);
+    }
+    
+    [Fact]
+    public void ItShouldGlobalSwitchArgument2()
+    {
+        // Arrange
+        var builder = new CommandArgsBuilder();
+        builder.AddGlobalSwitchArgument("test", "test", "description");
+        
+        // Act
+        var built = builder.Build();
+        
+        // Assert
+        Assert.Single(built.GlobalArguments);
+        Assert.Equal("test", built.GlobalArguments[0].Name);
+        Assert.Equal("description", built.GlobalArguments[0].Description);
+        Assert.Equal("test", built.GlobalArguments[0].Abbreviation);
+        Assert.Null(built.GlobalArguments[0].Validator);
+        Assert.False(built.GlobalArguments[0].IsRequired);
+        Assert.True(built.GlobalArguments[0].IsSwitch);
+    }
+    
     private class TestHandler1 : ICommandHandler
     {
         public Task Handle(ICommandArgumentsBag argumentsBag)

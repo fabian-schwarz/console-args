@@ -67,9 +67,9 @@ internal sealed class ValidationService
             if (argument.Validator is not null)
             {
                 var isValid = await argument.Validator(value).ConfigureAwait(false);
-                if (!isValid)
+                if (!isValid.IsValid)
                 {
-                    return ValidationResult.Error($"Argument value '{value}' for argument with name '{argument.Name}' is invalid!");
+                    return ValidationResult.Error($"Argument value '{value}' for argument with name '{argument.Name}' is invalid: {isValid.ErrorMessage}");
                 }
             }
         }
