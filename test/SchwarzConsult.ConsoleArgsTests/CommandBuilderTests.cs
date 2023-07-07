@@ -407,6 +407,21 @@ public class CommandBuilderTests
         Assert.True(command.Arguments[0].IsSwitch);
         Assert.Null(command.Arguments[0].Validator);
     }
+
+    [Fact]
+    public void ItShouldAddDelegateHandler()
+    {
+        // Arrange
+        var builder = new CommandBuilder(null);
+        builder.SetHandler(_ => Task.CompletedTask);
+
+        // Act
+        var built = builder.Build();
+
+        // Assert
+        Assert.NotNull(built.DelegateHandler);
+        Assert.Null(built.Handler);
+    }
     
     private class TestHandler1 : ICommandHandler
     {

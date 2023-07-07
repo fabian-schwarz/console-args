@@ -18,6 +18,12 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
         app.AddGlobalArgument("output", "o", "Output format.");
 
         app.AddDefaultHelp(isEnabled: true, "help", "?");
+
+        app.SetDefaultHandler(_ =>
+        {
+            Console.WriteLine("No command was specified. Please use --help to get a list with all possible commands");
+            return Task.CompletedTask;
+        });
         
         this.GroupCommands(app.AddCommand());
         
@@ -50,26 +56,21 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
                         "Microsoft.Compute/virtualMachineScaleSets",
                         "Microsoft.Compute/virtualMachines"
                     }.Contains(v ?? string.Empty)))
-                .SetHandler<GroupDeleteHandler>()
+                .SetHandler(argumentsBag =>
+                {
+                    foreach (var value in argumentsBag.List())
+                    {
+                        Console.WriteLine($"{value.Name}, {value.Abbreviation}: {value.Value}");
+                    }
+
+                    return Task.CompletedTask;
+                })
                 .AddSwitchArgument("no-wait", description: "Do not wait for the long-running operation to finish.")
                 .AddSwitchArgument("yes", "y", "Do not prompt for confirmation.")
                 .Done();
     }
 
     private sealed class GroupCreateHandler : ICommandHandler
-    {
-        public Task Handle(ICommandArgumentsBag argumentsBag)
-        {
-            foreach (var value in argumentsBag.List())
-            {
-                Console.WriteLine($"{value.Name}, {value.Abbreviation}: {value.Value}");
-            }
-
-            return Task.CompletedTask;
-        }
-    }
-    
-    private sealed class GroupDeleteHandler : ICommandHandler
     {
         public Task Handle(ICommandArgumentsBag argumentsBag)
         {

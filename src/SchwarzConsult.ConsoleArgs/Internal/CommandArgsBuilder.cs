@@ -10,12 +10,16 @@ internal sealed class CommandArgsBuilder : ICommandArgsBuilder
     private readonly List<CommandBuilder> _commands;
     private readonly List<Argument> _globalArguments;
     private readonly DefaultHelp _defaultHelp;
+    private Type? _defaultHandler;
+    private Func<ICommandArgumentsBag, Task>? _defaultDelegateHandler;
 
     public CommandArgsBuilder()
     {
         this._commands = new List<CommandBuilder>();
         this._globalArguments = new List<Argument>();
         this._defaultHelp = new();
+        this._defaultHandler = default;
+        this._defaultDelegateHandler = default;
     }
 
     public ICommandBuilder AddCommand()
@@ -29,8 +33,27 @@ internal sealed class CommandArgsBuilder : ICommandArgsBuilder
     {
         Commands = this._commands.Select(c => c.Build()).ToList(),
         GlobalArguments = this._globalArguments,
-        DefaultHelp = this._defaultHelp
+        DefaultHelp = this._defaultHelp,
+        DefaultHandler = this._defaultHandler,
+        DefaultDelegateHandler = this._defaultDelegateHandler,
     };
+    
+    public ICommandArgsBuilder SetDefaultHandler<THandler>()
+        where THandler : ICommandHandler
+    {
+        this._defaultHandler = typeof(THandler);
+        this._defaultDelegateHandler = default;
+        return this;
+    }
+    
+    public ICommandArgsBuilder SetDefaultHandler(Func<ICommandArgumentsBag, Task> delegateHandler)
+    {
+        Guard.ThrowIfNull(delegateHandler);
+
+        this._defaultDelegateHandler = delegateHandler;
+        this._defaultHandler = default;
+        return this;
+    }
 
     public ICommandArgsBuilder AddDefaultHelp(bool isEnabled = true, string name = "help", string abbreviation = "?")
     {
