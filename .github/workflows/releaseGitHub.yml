@@ -1,4 +1,4 @@
-name: Release
+name: Release on GitHub
 
 on:
     push:
@@ -23,13 +23,12 @@ jobs:
       run: dotnet build src/SchwarzConsult.ConsoleArgs/SchwarzConsult.ConsoleArgs.csproj --configuration Release --no-restore
     - name: Push to NuGet
       env:
-        NUGET_URL: https://api.nuget.org/v3/index.json
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        NUGET_URL: https://nuget.pkg.github.com/fabian-schwarz/console-args/index.json
       shell: pwsh
       run: |
         Get-ChildItem -Recurse -Filter "*.nupkg" | ForEach-Object {
             Write-Host "$($scriptName): Pushing $($_.Name)"
-            dotnet nuget push $_ --source $Env:NUGET_URL --api-key $Env:NUGET_API_KEY
+            dotnet nuget push $_ --source $Env:NUGET_URL --api-key ${{ secrets.GITHUB_TOKEN }}
             if ($lastexitcode -ne 0) {
                 throw ("Exec: " + $errorMessage)
             }

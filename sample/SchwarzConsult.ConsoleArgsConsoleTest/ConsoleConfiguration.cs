@@ -76,6 +76,7 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
                 .Done();
     }
 
+    // ReSharper disable once ClassNeverInstantiated.Local
     private sealed class GroupCreateHandler : ICommandHandler
     {
         public Task Handle(ICommandArgumentsBag argumentsBag)
