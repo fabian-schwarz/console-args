@@ -23,7 +23,7 @@ jobs:
       run: dotnet build src/SchwarzConsult.ConsoleArgs/SchwarzConsult.ConsoleArgs.csproj --configuration Release --no-restore
     - name: Push to NuGet
       env:
-        NUGET_URL: https://nuget.pkg.github.com/fabian-schwarz/console-args/index.json
+        NUGET_URL: https://nuget.pkg.github.com/fabian-schwarz/index.json
       shell: pwsh
       run: |
         Get-ChildItem -Recurse -Filter "*.nupkg" | ForEach-Object {
