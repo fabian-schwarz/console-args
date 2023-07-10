@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -85,5 +86,69 @@ public class ValidateTests
     {
         // Arrange, Act & Assert
         Assert.Equal(result, (await Validate.AsTimeSpan(value)).IsValid);
+    }
+
+    [Fact]
+    public async Task ItShouldValidateAsFileIfExists()
+    {
+        var file = Path.GetTempFileName();
+        try
+        {
+            // Arrange, Act & Assert
+            Assert.True((await Validate.AsFile(file)).IsValid);
+        }
+        finally
+        {
+            try
+            {
+                File.Delete(file);
+            }
+            catch
+            {
+                // Empty on purpose.
+            }
+        }
+    }
+    
+    [Fact]
+    public async Task ItShouldNotValidateAsFileIfNotExists()
+    {
+        // Arrange && Act
+        var result = await Validate.AsFile("asd");
+        
+        // Assert
+        Assert.False(result.IsValid);
+    }
+    
+    [Fact]
+    public async Task ItShouldValidateAsDirectoryIfExists()
+    {
+        var directory = Path.GetTempPath();
+        try
+        {
+            // Arrange, Act & Assert
+            Assert.True((await Validate.AsDirectory(directory)).IsValid);
+        }
+        finally
+        {
+            try
+            {
+                File.Delete(directory);
+            }
+            catch
+            {
+                // Empty on purpose.
+            }
+        }
+    }
+    
+    [Fact]
+    public async Task ItShouldNotValidateAsDirectoryIfNotExists()
+    {
+        // Arrange && Act
+        var result = await Validate.AsDirectory("asd");
+        
+        // Assert
+        Assert.False(result.IsValid);
     }
 }

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading.Tasks;
 
 // ReSharper disable once CheckNamespace
@@ -114,5 +115,29 @@ public static class Validate
         if (Guid.TryParse(value, out _)) return ValidationResult.OkAsync();
         
         return ValidationResult.ErrorAsync($"Value '{value}' is not a valid Guid.");
+    }
+
+    /// <summary>
+    /// Validates the argument as a file path.
+    /// </summary>
+    /// <param name="value">Value to validate.</param>
+    /// <returns>True if validation was successful, else false.</returns>
+    public static Task<ValidationResult> AsFile(string? value)
+    {
+        if (File.Exists(value))return ValidationResult.OkAsync();
+        
+        return ValidationResult.ErrorAsync($"File '{value}' does not exist.");
+    }
+    
+    /// <summary>
+    /// Validates the argument as a directory.
+    /// </summary>
+    /// <param name="value">Value to validate.</param>
+    /// <returns>True if validation was successful, else false.</returns>
+    public static Task<ValidationResult> AsDirectory(string? value)
+    {
+        if (Directory.Exists(value))return ValidationResult.OkAsync();
+        
+        return ValidationResult.ErrorAsync($"File '{value}' does not exist.");
     }
 }

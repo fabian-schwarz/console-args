@@ -76,6 +76,63 @@ internal class CommandArgumentsBag : ICommandArgumentsBag
         value = null;
         return false;
     }
+    
+    public bool TryGetValueByAbbreviationAs<TResult>(string abbreviation, Func<string, TResult> parser, out TResult? value)
+    {
+        Guard.ThrowIfNullOrWhiteSpace(abbreviation);
+        Guard.ThrowIfNull(parser);
+        
+        var argument = this._argumentValues.Find(a => a.Abbreviation == abbreviation);
+        if (argument is not null)
+        {
+            value = parser(argument.Value ?? 
+                           throw new ConsoleAppException($"Could not find argument value for argument with name '{argument.Name}' and abbreviation '{argument.Abbreviation}'"));
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+    
+    public bool TryGetValueByNameAs<TResult>(string name, Func<string, TResult> parser, out TResult? value)
+    {
+        Guard.ThrowIfNullOrWhiteSpace(name);
+        Guard.ThrowIfNull(parser);
+        
+        var argument = this._argumentValues.Find(a => a.Name == name);
+        if (argument is not null)
+        {
+            value = parser(argument.Value ?? 
+                           throw new ConsoleAppException($"Could not find argument value for argument with name '{argument.Name}' and abbreviation '{argument.Abbreviation}'"));
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+    
+    public bool TryGetValueByAbbreviationOrNameAs<TResult>(string name, string abbreviation, 
+        Func<string, TResult> parser, out TResult? value)
+    {
+        Guard.ThrowIfNullOrWhiteSpace(name);
+        Guard.ThrowIfNullOrWhiteSpace(abbreviation);
+        Guard.ThrowIfNull(parser);
+        
+        var result = this.TryGetValueByNameAs(name, parser, out value);
+        if (result) return true;
+        
+        return this.TryGetValueByAbbreviationAs(abbreviation, parser, out value);
+    }
+    
+    public bool TryGetValueAs<TResult>(ArgumentKeys keys, Func<string, TResult> parser, 
+        out TResult? value)
+    {
+        Guard.ThrowIfNull(keys);
+        Guard.ThrowIfNull(parser);
+        
+        return this.TryGetValueByAbbreviationOrNameAs(keys.Name ?? string.Empty, keys.Abbreviation ?? string.Empty, 
+            parser, out value);
+    }
 
     private void ThrowIfAlreadyIncluded(ArgumentValue value)
     {
