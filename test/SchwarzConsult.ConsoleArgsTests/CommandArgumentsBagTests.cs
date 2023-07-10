@@ -136,4 +136,141 @@ public class CommandArgumentsBagTests
         Assert.Equal(expectedExisting, actualExisting);
         Assert.Equal(expectedValue, actualValue);
     }
+
+    [Fact]
+    public void ItShouldTryGetValueByAbbreviationAs()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var bag = new CommandArgumentsBag();
+        bag.Add(new ArgumentValue("name1", "abbreviation1", "value1"));
+        bag.Add(new ArgumentValue("name2", "abbreviation2", id.ToString()));
+        bag.Add(new ArgumentValue("name3", "abbreviation3", "value3"));
+        
+        // Act
+        var value = bag.TryGetValueByAbbreviationAs("abbreviation2", Parse.AsGuid, out var actualValue);
+        
+        // Assert
+        Assert.True(value);
+        Assert.Equal(id, actualValue);
+    }
+    
+    [Fact]
+    public void ItShouldThrowIfNotTryGetValueByAbbreviationAs()
+    {
+        // Arrange
+        var bag = new CommandArgumentsBag();
+        bag.Add(new ArgumentValue("name1", "abbreviation1", "value1"));
+        bag.Add(new ArgumentValue("name2", "abbreviation2", "value2"));
+        bag.Add(new ArgumentValue("name3", "abbreviation3", "value3"));
+        
+        // Act
+        void Act() => bag.TryGetValueByAbbreviationAs("abbreviation2", Parse.AsGuid, out _);
+        
+        // Assert
+        Assert.Throws<ConsoleAppException>(Act);
+    }
+    
+    
+    [Fact]
+    public void ItShouldTryGetValueByNameAs()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var bag = new CommandArgumentsBag();
+        bag.Add(new ArgumentValue("name1", "abbreviation1", "value1"));
+        bag.Add(new ArgumentValue("name2", "abbreviation2", id.ToString()));
+        bag.Add(new ArgumentValue("name3", "abbreviation3", "value3"));
+        
+        // Act
+        var value = bag.TryGetValueByNameAs("name2", Parse.AsGuid, out var actualValue);
+        
+        // Assert
+        Assert.True(value);
+        Assert.Equal(id, actualValue);
+    }
+    
+    [Fact]
+    public void ItShouldThrowIfNotTryGetValueByNameAs()
+    {
+        // Arrange
+        var bag = new CommandArgumentsBag();
+        bag.Add(new ArgumentValue("name1", "abbreviation1", "value1"));
+        bag.Add(new ArgumentValue("name2", "abbreviation2", "value2"));
+        bag.Add(new ArgumentValue("name3", "abbreviation3", "value3"));
+        
+        // Act
+        void Act() => bag.TryGetValueByNameAs("name2", Parse.AsGuid, out _);
+        
+        // Assert
+        Assert.Throws<ConsoleAppException>(Act);
+    }
+    
+    [Fact]
+    public void ItShouldTryGetValueByAbbreviationOrNameAs()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var bag = new CommandArgumentsBag();
+        bag.Add(new ArgumentValue("name1", "abbreviation1", "value1"));
+        bag.Add(new ArgumentValue("name2", "abbreviation2", id.ToString()));
+        bag.Add(new ArgumentValue("name3", "abbreviation3", "value3"));
+        
+        // Act
+        var value = bag.TryGetValueByAbbreviationOrNameAs("name2","abbreviation2", Parse.AsGuid, out var actualValue);
+        
+        // Assert
+        Assert.True(value);
+        Assert.Equal(id, actualValue);
+    }
+    
+    [Fact]
+    public void ItShouldThrowIfNotTryGetValueByAbbreviationOrNameAs()
+    {
+        // Arrange
+        var bag = new CommandArgumentsBag();
+        bag.Add(new ArgumentValue("name1", "abbreviation1", "value1"));
+        bag.Add(new ArgumentValue("name2", "abbreviation2", "value2"));
+        bag.Add(new ArgumentValue("name3", "abbreviation3", "value3"));
+        
+        // Act
+        void Act() => bag.TryGetValueByAbbreviationOrNameAs("name2", "abbreviation2", Parse.AsGuid, out _);
+        
+        // Assert
+        Assert.Throws<ConsoleAppException>(Act);
+    }
+    
+    [Fact]
+    public void ItShouldTryGetValueByAs()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var bag = new CommandArgumentsBag();
+        bag.Add(new ArgumentValue("name1", "abbreviation1", "value1"));
+        bag.Add(new ArgumentValue("name2", "abbreviation2", id.ToString()));
+        bag.Add(new ArgumentValue("name3", "abbreviation3", "value3"));
+        
+        // Act
+        var value = bag.TryGetValueAs(new ArgumentKeys("name2","abbreviation2"), Parse.AsGuid, out var actualValue);
+        
+        // Assert
+        Assert.True(value);
+        Assert.Equal(id, actualValue);
+    }
+    
+    [Fact]
+    public void ItShouldThrowIfNotTryGetValueByAs()
+    {
+        // Arrange
+        var bag = new CommandArgumentsBag();
+        bag.Add(new ArgumentValue("name1", "abbreviation1", "value1"));
+        bag.Add(new ArgumentValue("name2", "abbreviation2", "value2"));
+        bag.Add(new ArgumentValue("name3", "abbreviation3", "value3"));
+        
+        // Act
+        void Act() => bag.TryGetValueAs(new ArgumentKeys("name2", "abbreviation2"), Parse.AsGuid, out _);
+        
+        // Assert
+        Assert.Throws<ConsoleAppException>(Act);
+    }
 }

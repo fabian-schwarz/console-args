@@ -81,10 +81,16 @@ public class ConsoleConfiguration : IConsoleAppConfiguration
     {
         public Task Handle(ICommandArgumentsBag argumentsBag)
         {
+            // Loop through all available arguments and their values
             foreach (var value in argumentsBag.List())
             {
                 Console.WriteLine($"{value.Name}, {value.Abbreviation}: {value.Value}");
             }
+            
+            // Get a specific argument value & parse it to a specific type
+            var idFound = argumentsBag.TryGetValueByAbbreviationOrNameAs("id", "i", Parse.AsGuid, 
+                out var id);
+            Console.WriteLine($"Id found: {id}");
 
             return Task.CompletedTask;
         }
