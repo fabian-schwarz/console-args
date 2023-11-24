@@ -1,4 +1,3 @@
-using System.Runtime.Serialization;
 using SchwarzConsult.ConsoleArgs.Internal;
 
 // ReSharper disable once CheckNamespace
@@ -17,9 +16,5 @@ public class ConsoleAppException : Exception
     public ConsoleAppException(string message) : base(message)
     {
         Guard.ThrowIfNullOrWhiteSpace(message);
-    }
-    
-    protected ConsoleAppException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
     }
 }
