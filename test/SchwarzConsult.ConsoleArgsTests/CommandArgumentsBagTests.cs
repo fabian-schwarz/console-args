@@ -58,7 +58,7 @@ public class CommandArgumentsBagTests
     [InlineData("name3", true, "value3")]
     [InlineData("notThere", false, null)]
     [InlineData("shouldAlsoBeNotThere", false, null)]
-    public void ItShouldGetArgumentByName(string name, bool expectedExisting, string expectedValue)
+    public void ItShouldGetArgumentByName(string name, bool expectedExisting, string? expectedValue)
     {
         // Arrange
         var bag = new CommandArgumentsBag();
@@ -79,7 +79,7 @@ public class CommandArgumentsBagTests
     [InlineData("abbreviation3", true, "value3")]
     [InlineData("notThere", false, null)]
     [InlineData("shouldAlsoBeNotThere", false, null)]
-    public void ItShouldGetArgumentByAbbreviation(string abbreviation, bool expectedExisting, string expectedValue)
+    public void ItShouldGetArgumentByAbbreviation(string abbreviation, bool expectedExisting, string? expectedValue)
     {
         // Arrange
         var bag = new CommandArgumentsBag();
@@ -100,7 +100,7 @@ public class CommandArgumentsBagTests
     [InlineData("name3", "abbreviation3", true, "value3")]
     [InlineData("notThere", "notThere", false, null)]
     [InlineData("shouldAlsoBeNotThere", "shouldAlsoBeNotThere", false, null)]
-    public void ItShouldGetArgumentByAbbreviationOrName(string name, string abbreviation, bool expectedExisting, string expectedValue)
+    public void ItShouldGetArgumentByAbbreviationOrName(string name, string abbreviation, bool expectedExisting, string? expectedValue)
     {
         // Arrange
         var bag = new CommandArgumentsBag();
@@ -121,7 +121,7 @@ public class CommandArgumentsBagTests
     [InlineData("name3", "abbreviation3", true, "value3")]
     [InlineData("notThere", "notThere", false, null)]
     [InlineData("shouldAlsoBeNotThere", "shouldAlsoBeNotThere", false, null)]
-    public void ItShouldGetArgumentByKey(string name, string abbreviation, bool expectedExisting, string expectedValue)
+    public void ItShouldGetArgumentByKey(string name, string abbreviation, bool expectedExisting, string? expectedValue)
     {
         // Arrange
         var bag = new CommandArgumentsBag();
